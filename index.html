@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XT-AI Chatbot</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      background: linear-gradient(to bottom right, #0f2027, #203a43, #2c5364);
+      font-family: 'Inter', sans-serif;
+      color: white;
+    }
+    nav {
+      height: 60px;
+      background: rgba(30, 30, 30, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 2rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    nav h1 {
+      color: #00BFFF;
+    }
+    nav a {
+      color: #00BFFF;
+      margin-left: 1rem;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s, transform 0.3s;
+    }
+    nav a:hover {
+      color: #ffffff;
+      transform: scale(1.05);
+    }
+    .screen {
+      display: none;
+      padding: 2rem;
+    }
+    .active {
+      display: block;
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .btn {
+      background-color: #00BFFF;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+    .btn:hover {
+      background-color: #008fcc;
+      transform: scale(1.05);
+    }
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,191,255,0.2);
+    }
+    .login-form input {
+      width: 100%;
+      padding: 0.75rem;
+      margin-bottom: 1rem;
+      background-color: #2a2a2a;
+      border: none;
+      color: white;
+      border-radius: 6px;
+    }
+    .chat-interface {
+      display: flex;
+      height: 80vh;
+      gap: 1rem;
+    }
+    .sidebar {
+      width: 250px;
+      background-color: rgba(30,30,30,0.8);
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: rgba(28,28,28,0.9);
+      padding: 1rem;
+      border-radius: 6px;
+    }
+    .chat-box {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .message {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      margin: 0.5rem 0;
+      max-width: 80%;
+    }
+    .message.user {
+      align-self: flex-end;
+      background-color: #00BFFF;
+    }
+    .message.bot {
+      align-self: flex-start;
+      background-color: #2a2a2a;
+    }
+    .input-bar {
+      display: flex;
+      gap: 0.5rem;
+    }
+    .input-bar input {
+      flex: 1;
+      padding: 0.75rem;
+      background: #2a2a2a;
+      border: none;
+      border-radius: 6px;
+      color: white;
+    }
+    .input-bar button {
+      background-color: #00BFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem;
+      cursor: pointer;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>XT-AI</h1>
+    <div>
+      <a href="#" onclick="navigate('welcome')">Home</a>
+      <a href="#" onclick="navigate('login')">Login</a>
+      <a href="#" onclick="navigate('chat')">Chat</a>
+    </div>
+  </nav>
+
+  <div id="welcome" class="screen active welcome">
+    <h2 style="margin-top: 5rem; font-size: 2.5rem;">Welcome to XT-AI</h2>
+    <p style="margin: 1rem auto; font-size: 1.2rem;">Your intelligent assistant for tasks, reminders, and more.</p>
+    <div class="center-btn">
+      <button class="btn" onclick="navigate('login')">Try It Now</button>
+    </div>
+  </div>
+
+  <div id="login" class="screen">
+    <form class="login-form">
+      <h2 style="text-align: center; margin-bottom: 1rem;">Login</h2>
+      <input type="email" placeholder="Email" required>
+      <input type="password" placeholder="Password" required>
+      <button class="btn" type="submit" onclick="navigate('chat'); return false;">Login</button>
+      <button class="btn" type="button" onclick="navigate('chat')">Login with Google</button>
+    </form>
+  </div>
+
+  <div id="chat" class="screen">
+    <div class="chat-interface">
+      <div class="sidebar">
+        <label>Model:
+          <select><option>XT-AI</option></select>
+        </label>
+        <label>Tone:
+          <select><option>Friendly</option><option>Professional</option></select>
+        </label>
+        <label><input type="checkbox" checked> Memory On</label>
+        <div>Chat History</div>
+      </div>
+      <div class="chat-area">
+        <div class="chat-box" id="chat-box"></div>
+        <div class="input-bar">
+          <input type="text" id="chat-input" placeholder="Type your message...">
+          <button onclick="handleSend()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const chatBox = document.getElementById('chat-box');
+    const inputField = document.getElementById('chat-input');
+    const memory = [];
+
+    function navigate(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(screenId).classList.add('active');
+    }
+
+    function appendMessage(role, text) {
+      const msg = document.createElement('div');
+      msg.className = `message ${role}`;
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    function handleSend() {
+      const userInput = inputField.value.trim();
+      if (!userInput) return;
+      appendMessage('user', userInput);
+      memory.push({ role: 'user', content: userInput });
+      inputField.value = '';
+      setTimeout(() => {
+        const response = generateBotResponse(userInput);
+        appendMessage('bot', response);
+        memory.push({ role: 'bot', content: response });
+        console.log('Memory:', JSON.stringify(memory, null, 2));
+      }, 600);
+    }
+
+    function generateBotResponse(input) {
+  const lower = input.toLowerCase();
+  if (lower.includes("remind")) return "Okay! I’ve set a reminder.";
+  if (lower.includes("hello")) return "Hi! How can I assist you today?";
+  if (lower.includes("weather")) return "The current weather is sunny with a light breeze.";
+  if (lower.includes("time")) return "It's " + new Date().toLocaleTimeString();
+  if (lower.includes("date")) return "Today is " + new Date().toLocaleDateString();
+  if (lower.includes("name")) return "I'm XT-AI, your assistant.";
+  if (lower.includes("creator")) return "I was developed by a talented team of developers!";
+  if (lower.includes("joke")) return "Why did the function break up with the loop? Because it needed space!";
+  if (lower.includes("bye")) return "Goodbye! Have a great day!";
+  if (lower.includes("thanks") || lower.includes("thank you")) return "You're welcome! 😊";
+  return "I’m here to help! Could you elaborate more?";
+}
+
+
+    inputField.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') handleSend();
+    });
+  </script>
+</body>
+</html>
